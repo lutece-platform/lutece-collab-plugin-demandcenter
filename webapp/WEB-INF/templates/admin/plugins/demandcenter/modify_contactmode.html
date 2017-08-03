@@ -1,0 +1,23 @@
+<#include "managedemandcenter_tabs.html" />
+<@tabs2 tab="contactmode" />
+
+<@box>
+	<@boxHeader title='#i18n{demandcenter.modify_contactmode.title}' />
+	<@boxBody>
+    <@tform class="form-horizontal" method="post" name="modify_contactmode" action="jsp/admin/plugins/demandcenter/ManageContactModes.jsp">
+			<@messages errors=errors />
+			<input type="hidden" id="id" name="id" value="${contactmode.id}"/>
+			
+				<@formGroup labelKey='#i18n{demandcenter.modify_contactmode.labelCode}' helpKey='#i18n{demandcenter.modify_contactmode.labelCode.help}' mandatory=true>
+					<@input type='text' name='code' value='${contactmode.code}' />
+				</@formGroup>
+				<@formGroup labelKey='#i18n{demandcenter.modify_contactmode.labelLabel}' helpKey='#i18n{demandcenter.modify_contactmode.labelLabel.help}' mandatory=true>
+					<@input type='text' name='label' value='${contactmode.label}' />
+				</@formGroup>
+				<@formGroup labelKey='#i18n{demandcenter.modify_contactmode.labelIconFont}' helpKey='#i18n{demandcenter.modify_contactmode.labelIconFont.help}' >
+					<@input type='text' name='icon_font' value='${contactmode.iconFont}' />
+				</@formGroup>
+        <@actionButtons button1Name="action_modifyContactMode" button2Name="view_manageContactMode"/>
+    </@tform>
+	</@boxBody>
+</@box>

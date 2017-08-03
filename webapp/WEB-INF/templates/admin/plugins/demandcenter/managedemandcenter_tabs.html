@@ -1,0 +1,18 @@
+<#macro tabs2 tab >
+<@tabs>
+	<@listTabs>
+			<li <#if tab="attribute">class="active"</#if>>
+				<a href="jsp/admin/plugins/demandcenter/ManageAttributes.jsp">#i18n{demandcenter.manage_attributes.pageTitle}</a>
+			</li>
+			<li <#if tab="category">class="active"</#if>>
+				<a href="jsp/admin/plugins/demandcenter/ManageCategorys.jsp">#i18n{demandcenter.manage_categories.pageTitle}</a>
+			</li>
+			<li <#if tab="channel">class="active"</#if>>
+				<a href="jsp/admin/plugins/demandcenter/ManageChannels.jsp">#i18n{demandcenter.manage_channels.pageTitle}</a>
+			</li>
+			<li <#if tab="contactmode">class="active"</#if>>
+				<a href="jsp/admin/plugins/demandcenter/ManageContactModes.jsp">#i18n{demandcenter.manage_contactmodes.pageTitle}</a>
+			</li>
+	</@listTabs>
+</@tabs>
+</#macro>

@@ -1,0 +1,26 @@
+<#include "managedemandcenter_tabs.html" />
+<@tabs2 tab="attribute" />
+<@box>
+	<@boxHeader title='#i18n{demandcenter.create_attribute.title}' />
+	<@boxBody>
+    <@tform name='create_attribute' action='jsp/admin/plugins/demandcenter/ManageAttributes.jsp'>
+        <@messages errors=errors />
+        <input type="hidden" id="id" name="id"/>
+        
+            <@formGroup labelKey='#i18n{demandcenter.create_attribute.labelCode}' helpKey='#i18n{demandcenter.create_attribute.labelCode.help}' mandatory=true>
+                    <@input type='text' name='code' value='${attribute.code!\'\'}' />
+            </@formGroup>
+            <@formGroup labelKey='#i18n{demandcenter.create_attribute.labelLabel}' helpKey='#i18n{demandcenter.create_attribute.labelLabel.help}' mandatory=true>
+                    <@input type='text' name='label' value='${attribute.label!\'\'}' />
+            </@formGroup>
+            <@formGroup labelKey='#i18n{demandcenter.create_attribute.labelMandatory}' helpKey='#i18n{demandcenter.create_attribute.labelMandatory.help}' mandatory=true>
+                    <@checkBox name='mandatory' value='0' />
+            </@formGroup>
+            <@formGroup labelKey='#i18n{demandcenter.create_attribute.labelMayBeFilledByIdentityService}' helpKey='#i18n{demandcenter.create_attribute.labelMayBeFilledByIdentityService.help}' mandatory=true>
+                    <@checkBox name='may_be_filled_by_identity_service' value='0' />
+            </@formGroup>
+
+            <@actionButtons button1Name="action_createAttribute" button2Name="view_manageAttribute"/>
+    </@tform>
+	</@boxBody>
+</@box>

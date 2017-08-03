@@ -1,0 +1,23 @@
+<#include "managedemandcenter_tabs.html" />
+<@tabs2 tab="channel" />
+<@box>
+	<@boxHeader title='#i18n{demandcenter.create_channel.title}' />
+	<@boxBody>
+    <@tform name='create_channel' action='jsp/admin/plugins/demandcenter/ManageChannels.jsp'>
+        <@messages errors=errors />
+        <input type="hidden" id="id" name="id"/>
+        
+				<@formGroup labelKey='#i18n{demandcenter.create_channel.labelLabel}' helpKey='#i18n{demandcenter.create_channel.labelLabel.help}' mandatory=true>
+					<@input type='text' name='label' value='${channel.label!\'\'}' />
+				</@formGroup>
+				<@formGroup labelKey='#i18n{demandcenter.create_channel.labelIconFont}' helpKey='#i18n{demandcenter.create_channel.labelIconFont.help}' >
+					<@input type='text' name='icon_font' value='${channel.iconFont!\'\'}' />
+				</@formGroup>
+				<@formGroup labelKey='#i18n{demandcenter.create_channel.labelCode}' helpKey='#i18n{demandcenter.create_channel.labelCode.help}' mandatory=true>
+					<@input type='text' name='code' value='${channel.code!\'\'}' />
+				</@formGroup>
+				
+				<@actionButtons button1Name="action_createChannel" button2Name="view_manageChannel"/>
+    </@tform>
+	</@boxBody>
+</@box>
