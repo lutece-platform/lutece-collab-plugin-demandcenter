@@ -31,60 +31,66 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.demandcenter.business.demand.filter;
+package fr.paris.lutece.plugins.demandcenter.service.demand;
 
-import fr.paris.lutece.plugins.demandcenter.business.category.Category;
 import fr.paris.lutece.plugins.demandcenter.business.demand.Demand;
-import fr.paris.lutece.plugins.demandcenter.service.category.CategoryService;
-import fr.paris.lutece.portal.business.user.AdminUser;
-import fr.paris.lutece.portal.service.admin.AdminUserService;
-import fr.paris.lutece.portal.service.rbac.RBACService;
-import java.util.ArrayList;
-
+import fr.paris.lutece.plugins.demandcenter.business.demand.DemandHome;
+import fr.paris.lutece.portal.service.rbac.Permission;
+import fr.paris.lutece.portal.service.rbac.ResourceIdService;
+import fr.paris.lutece.portal.service.rbac.ResourceType;
+import fr.paris.lutece.portal.service.rbac.ResourceTypeManager;
+import fr.paris.lutece.util.ReferenceList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
-public class RBACDemandFilter implements IDemandFilter
+public class DemandIdService extends ResourceIdService
 {
-    private final AdminUser _user;
-
-    private static final String RBAC_DEMAND_FILTER = "rbac_demand_filter";
+    private static final String PLUGIN_NAME = "demandcenter";
 
     /**
-     * Constructor of RBAC demand filter
-     * 
-     * @param request
-     *            the HttpServletRequest
+     * {@inheritDoc}
      */
-    public RBACDemandFilter( HttpServletRequest request )
+    @Override
+    public void register( )
     {
-        _user = AdminUserService.getAdminUser( request );
+        ResourceType rt = new ResourceType( );
+        rt.setResourceIdServiceClass(DemandIdService.class.getName( ) );
+        rt.setPluginName( PLUGIN_NAME );
+        rt.setResourceTypeKey( Demand.RESOURCE_TYPE );
+        rt.setResourceTypeLabelKey( Demand.PROPERTY_LABEL_RESOURCE_TYPE );
+
+        Permission p = new Permission( );
+        p.setPermissionKey( Demand.PERMISSION_MODIFY );
+        p.setPermissionTitleKey( Demand.PROPERTY_LABEL_PERMISSION_MODIFY );
+        rt.registerPermission( p );
+
+        p = new Permission( );
+        p.setPermissionKey( Demand.PERMISSION_DELETE );
+        p.setPermissionTitleKey( Demand.PROPERTY_LABEL_PERMISSION_DELETE );
+        rt.registerPermission( p );
+
+        ResourceTypeManager.registerResourceType( rt );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Demand> processFilter( List<Demand> listDemands )
+    public ReferenceList getResourceIdList( Locale locale )
     {
-        List<Demand> listFilteredDemand = new ArrayList<Demand>( );
-        for ( Demand demand : listDemands )
-        {
-            if ( CategoryService.isAutorized( demand.getCategory(), Category.PERMISSION_VIEW, _user) )
-            {
-                listFilteredDemand.add( demand );
-            }
-        }
-        return listFilteredDemand;
+        List<Demand> listDemand = DemandHome.getDemandsList();
+
+        return ReferenceList.convert( listDemand, "id", "reference", true );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getFilterName( )
+    public String getTitle( String strId, Locale locale )
     {
-        return RBAC_DEMAND_FILTER;
+        Demand demand = DemandHome.findByPrimaryKey( Integer.parseInt( strId ) );
+        return demand.getReference();
     }
 
 }

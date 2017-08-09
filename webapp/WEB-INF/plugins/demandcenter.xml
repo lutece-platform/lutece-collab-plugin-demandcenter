@@ -37,6 +37,14 @@
             <feature-url>jsp/admin/plugins/demandcenter/ManageDemands.jsp</feature-url>
             <feature-icon-url></feature-icon-url>
       </admin-feature>
+      <admin-feature>
+            <feature-id>USER_PREFERENCES_MANAGEMENT</feature-id>
+            <feature-title>demandcenter.adminFeature.ManageUserPreferences.name</feature-title>
+            <feature-description>demandcenter.adminFeature.ManageUserPreferences.description</feature-description>
+            <feature-level>2</feature-level>
+            <feature-url>jsp/admin/plugins/demandcenter/UserPreferences.jsp</feature-url>
+            <feature-icon-url/>
+        </admin-feature>
     </admin-features>    
     
     <admin-css-stylesheets>

@@ -1,0 +1,58 @@
+<script>$(".content-header").hide();</script>
+<#include "/admin/util/editor/editor.html" />
+<div class="gru-wrapper">
+  <div id="customer-panel" class="row demand-head bg-gru-light">
+    <div class="col-xs-12 col-sm-offset-1 col-sm-11">
+      <h2>#i18n{demandcenter.manage_user_preferences.pageTitle}</h2>
+      <h3>#i18n{demandcenter.manage_user_preferences.labelTitle}</h3>
+    </div>
+  </div>
+  <div id="demand-panel" class="row">
+    <div class="col-xs-12 col-sm-12 top">
+      <div class="row">
+        <div class="col-xs-12 col-sm-offset-1 col-sm-9">
+          <@messages infos=infos />
+          <@messages errors=errors />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-offset-1 col-sm-9">
+          <form id="" class="form-horizontal" method="post" name="modify_user_preferences" action="jsp/admin/plugins/demandcenter/UserPreferences.jsp" enctype="multipart/form-data">
+            <div class="form-group">
+              <label class="col-xs-12 col-sm-3 control-label">#i18n{demandcenter.manage_user_preferences.labelCreationDate} :</label>
+              <div class="col-xs-12 col-sm-9">
+                <div>
+                  <input type="radio" name="creation_date_display" id="check_creation_date_as_counter" value="counter" <#if !creation_date_as_date>checked</#if> />
+                  <label for="check_creation_date_as_counter" >
+                  &nbsp;#i18n{demandcenter.manage_user_preferences.labelCreationDate.counter}
+                  </label>
+                  ( #i18n{demandcenter.manage_user_preferences.labelCreationDate.labelExample} <strong class="lead">0</strong> #i18n{demandcenter.commons.unitMinute} )
+                </div>
+                <div>
+                  <input type="radio" name="creation_date_display" id="check_creation_date_as_date" value="date" <#if creation_date_as_date>checked</#if>/>
+                  <label for="check_creation_date_as_date" >
+                  &nbsp;#i18n{demandcenter.manage_user_preferences.labelCreationDate.date}
+                  </label>
+                  ( #i18n{demandcenter.manage_user_preferences.labelCreationDate.labelExample} ${.now?string["dd/MM/yyyy HH:mm"]} )
+                  <p class="help-block">#i18n{demandcenter.manage_user_preferences.labelCreationDate.help}</p>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 control-label" for="user_signature">#i18n{demandcenter.manage_user_preferences.labelUserSignature}&nbsp;:</label>
+                <div class="col-xs-12 col-sm-9">
+                    <textarea class="demandcenter form-control richtext" id="user_signature" name="user_signature" >${user_signature!''}</textarea>
+                    <p class="help-block">#i18n{demandcenter.manage_user_preferences.labelUserSignature.help}</p>
+                </div>
+            </div>
+            <@actionButtons button1Name="action_modifyUserPreferences" i18nValue1Key="demandcenter.manage_user_preferences.button.save" offset=3 />
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<@initEditor />
+
+
+

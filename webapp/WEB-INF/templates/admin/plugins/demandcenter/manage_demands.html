@@ -37,7 +37,7 @@
       	  </thead>	
       		<tbody>
     			<#list panel_list as demand >
-    			<tr data-url="jsp/admin/plugins/demandcenter/ManageDemands.jsp?view=detailsDemand&id=${demand.id}" >
+    			<tr data-url="jsp/admin/plugins/demandcenter/ManageDemands.jsp?view=demandDetails&id_demand=${demand.id}" >
     			<#--<#if mass_actions_list?? && mass_actions_list?has_content && selected_tab?? && selected_tab!="domain">
     				<td class="mass-checkbox">
     					<input type="checkbox" value="${ticket.id}" class="mass-action-ready">
@@ -86,11 +86,11 @@
               </#if>  
             </td>
 		          <td>
-    				<#--<#if creation_date_as_date >-->
+    		    <#if creation_date_display=="date" >
                       ${demand.dateCreate?string["dd/MM/yyyy HH:mm"]}
-                    <#--<#else>
-                      ${displayDateAsCounter( demand.dateCreate, demand.demandStatus ) }
-                    </#if>-->
+                    <#elseif creation_date_display=="counter">
+                      ${displayDateAsCounter( demand.dateCreate, demand.status ) }
+                    </#if>
     			  </td>
     			  <td>
                             <@categoryFormated demand.category/>
@@ -327,11 +327,11 @@
 $( function(){
 
 	// Set link on whole tr
-//        $("tbody > tr").on( 'click', function(e){
-//		if (!$(e.target).hasClass("mass-checkbox") && !$(e.target).hasClass("mass-action-ready")){
-//			redirectOnClick(this);
-//		}
-//	});
+        $("tbody > tr").on( 'click', function(e){
+		if (!$(e.target).hasClass("mass-checkbox") && !$(e.target).hasClass("mass-action-ready")){
+			redirectOnClick(this);
+		}
+	});
 	// Tooltip
   $('[data-toggle="tooltip"]').tooltip();
 

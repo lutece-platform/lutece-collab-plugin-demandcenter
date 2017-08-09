@@ -70,6 +70,21 @@ public final class DemandDAO implements IDemandDAO
             + " LEFT JOIN workflow_resource_workflow ON workflow_resource_workflow.resource_type = 'demandcenter_demand' AND workflow_resource_workflow.id_resource = demand.id_demand "
             + " LEFT JOIN workflow_state workflow_state ON workflow_resource_workflow.id_state = workflow_state.id_state";
 
+    private static final String SQL_QUERY_SELECT_FULL = "SELECT demand.id_demand, demand.reference, demand.code_form, demand.is_read, demand.comment, demand.date_create, demand.date_close, demand.date_last_update, demand_content ,demand.id_category, demand.guid, "
+            + "assigneeuser.last_name, assigneeuser.first_name, assigneeuser.email, "
+            + "assigneeunit.id_unit, assigneeunit.label, "
+            + "channel.label, channel.icon_font, "
+            + "contactmode.label, contactmode.icon_font, "
+            + "workflow_state.name "
+            + " FROM demandcenter_demand demand "
+            + " LEFT JOIN core_admin_user assigneeuser ON demand.id_assignee_user = assigneeuser.id_user "
+            + " LEFT JOIN unittree_unit assigneeunit ON demand.id_assignee_unit = assigneeunit.id_unit "
+            + " LEFT JOIN demandcenter_channel channel ON demand.id_channel = channel.id_channel "
+            + " LEFT JOIN demandcenter_contactmode contactmode ON demand.id_contact_mode = contactmode.id_contact_mode "
+            + " LEFT JOIN workflow_resource_workflow ON workflow_resource_workflow.resource_type = 'demandcenter_demand' AND workflow_resource_workflow.id_resource = demand.id_demand "
+            + " LEFT JOIN workflow_state workflow_state ON workflow_resource_workflow.id_state = workflow_state.id_state "
+            + " WHERE demand.id_demand = ?";
+    
     /**
      * Generates a new primary key
      * 
@@ -319,6 +334,47 @@ public final class DemandDAO implements IDemandDAO
 
         daoUtil.free( );
         return demandList;
+    }
+
+    @Override
+    public Demand loadFull( int nKey, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_FULL, plugin );
+        daoUtil.setInt( 1, nKey );
+        daoUtil.executeQuery( );
+        Demand demand = null;
+
+        if ( daoUtil.next( ) )
+        {
+            demand = new Demand( );
+            int nIndex = 1;
+
+            demand.setId( daoUtil.getInt( nIndex++ ) );
+            demand.setReference( daoUtil.getString( nIndex++ ) );
+            demand.setCodeForm( daoUtil.getString( nIndex++ ) );
+            demand.setRead( daoUtil.getBoolean( nIndex++ ) );
+            demand.setComment( daoUtil.getString( nIndex++ ) );
+            demand.setDateCreate( daoUtil.getTimestamp( nIndex++ ) );
+            demand.setDateClose( daoUtil.getTimestamp( nIndex++ ) );
+            demand.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+            demand.setDemandContent( daoUtil.getString( nIndex++ )  );
+            demand.setCategory( CategoryService.getInstance( ).findById( daoUtil.getInt( nIndex++ ) ) );
+            demand.setGuid( daoUtil.getString( nIndex++ ) );
+            demand.getAssigneeUser( ).setLastName( daoUtil.getString( nIndex++ ) );
+            demand.getAssigneeUser( ).setFirstName( daoUtil.getString( nIndex++ ) );
+            demand.getAssigneeUser( ).setEmail( daoUtil.getString( nIndex++ ) );
+            demand.getAssigneeUnit( ).setIdUnit( daoUtil.getInt( nIndex++ ) );
+            demand.getAssigneeUnit( ).setLabel( daoUtil.getString( nIndex++ ) );
+            demand.getChannel( ).setLabel( daoUtil.getString( nIndex++ ) );
+            demand.getChannel( ).setIconFont( daoUtil.getString( nIndex++ ) );
+            demand.getContactMode( ).setLabel( daoUtil.getString( nIndex++ ) );
+            demand.getContactMode( ).setIconFont( daoUtil.getString( nIndex++ ) );
+            demand.getState( ).setName( daoUtil.getString( nIndex++ ) );
+        
+        }
+
+        daoUtil.free( );
+        return demand;
     }
 
 }

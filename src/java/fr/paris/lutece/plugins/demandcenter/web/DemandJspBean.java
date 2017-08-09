@@ -39,13 +39,20 @@ import fr.paris.lutece.plugins.demandcenter.business.demand.Demand;
 import fr.paris.lutece.plugins.demandcenter.business.demand.DemandHome;
 import fr.paris.lutece.plugins.demandcenter.business.demand.filter.PanelDemandFilter;
 import fr.paris.lutece.plugins.demandcenter.business.demand.filter.RBACDemandFilter;
+import fr.paris.lutece.plugins.demandcenter.rs.exception.JsonConvertToObjectException;
+import fr.paris.lutece.plugins.demandcenter.service.category.CategoryService;
 import fr.paris.lutece.plugins.demandcenter.service.category.CategoryTreeCacheService;
 import fr.paris.lutece.plugins.demandcenter.service.tree.Tree;
 import fr.paris.lutece.plugins.demandcenter.service.demand.DemandFilterService;
+import fr.paris.lutece.plugins.demandcenter.service.demand.DemandService;
 import fr.paris.lutece.plugins.demandcenter.web.panel.DemandPanel;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
+import fr.paris.lutece.portal.service.message.AdminMessage;
+import fr.paris.lutece.portal.service.message.AdminMessageService;
+import fr.paris.lutece.portal.service.prefs.AdminUserPreferencesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.web.constants.Messages;
 
 import java.util.List;
 import java.util.Map;
@@ -59,7 +66,7 @@ public class DemandJspBean extends ManageDemandcenterJspBean
 {
     // Templates
     private static final String TEMPLATE_MANAGE_DEMANDS = "/admin/plugins/demandcenter/manage_demands.html";
-    private static final String TEMPLATE_DETAILS_DEMAND = "/admin/plugins/demandcenter/details_demands.html";
+    private static final String TEMPLATE_DETAILS_DEMAND = "/admin/plugins/demandcenter/details_demand.html";
 
     // Parameters
     private static final String PARAMETER_ID_DEMAND = "id_demand";
@@ -74,7 +81,13 @@ public class DemandJspBean extends ManageDemandcenterJspBean
     private static final String MARK_DEMAND = "demand";
     private static final String MARK_TREE_CATEGORIES = "tree";
     private static final String MARK_SELECTED_TAB = "selected_tab";
+    private static final String MARK_READ_ONLY_HTML_FIELDSETS = "read_only_html_fieldsets";
+    private static final String MARK_TYPE_DISPLAY_DATE = "creation_date_display";
 
+    //User preferences 
+    private static final String USER_PREFERENCE_CREATION_DATE_DISPLAY = "user_creation_date_display_date";
+    private static final String USER_PREFERENCE_CREATION_DATE_COUNTER = "counter";
+    
     private static final String JSP_MANAGE_DEMANDS = "jsp/admin/plugins/demandcenter/ManageDemands.jsp";
 
     // Properties
@@ -130,8 +143,13 @@ public class DemandJspBean extends ManageDemandcenterJspBean
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_DEMAND_LIST, listDemands, JSP_MANAGE_DEMANDS );
 
+        model.put( MARK_TYPE_DISPLAY_DATE, AdminUserPreferencesService.instance().get( 
+                Integer.toString( getUser().getUserId() ), 
+                USER_PREFERENCE_CREATION_DATE_DISPLAY, 
+                USER_PREFERENCE_CREATION_DATE_COUNTER ) );
         model.put( MARK_SELECTED_TAB, panel.getName( ) );
         model.put( MARK_TREE_CATEGORIES, treeCategory );
+        
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_DEMANDS, TEMPLATE_MANAGE_DEMANDS, model );
     }
 
@@ -149,16 +167,35 @@ public class DemandJspBean extends ManageDemandcenterJspBean
         String strDemandId = request.getParameter( PARAMETER_ID_DEMAND );
         if ( strDemandId != null )
         {
-            // _demand = DemandHome.findFullByPrimaryKey( Integer.parseInt( strDemandId ) );
-            if ( _demand != null )
+            try
             {
-                Map<String, Object> model = getModel( );
-                model.put( MARK_DEMAND, _demand );
-                model.put( MARK_TREE_CATEGORIES, CategoryTreeCacheService.getInstance( ).getResource( ) );
-                return getPage( PROPERTY_PAGE_TITLE_DETAILS_DEMAND, TEMPLATE_DETAILS_DEMAND, model );
+                _demand = DemandService.loadDemandById( Integer.parseInt( strDemandId ) );
+
+                if ( _demand != null )
+                {
+                    // check user rights according to the demand category
+                    if (  !CategoryService.isAutorized( _demand.getCategory(), Category.PERMISSION_VIEW_DETAILS, getUser( ) ) )
+                    {
+                        return redirect( request, AdminMessageService.getMessageUrl( request, Messages.USER_ACCESS_DENIED, AdminMessage.TYPE_STOP ) );
+                    }
+                    
+                    //Get the read only fieldsets of responses attached to the demand
+                    String htmlFieldsets = DemandService.getReadOnlyFieldsetsAsHtml( _demand, request.getLocale() );
+
+                    Map<String, Object> model = getModel( );
+                    model.put( MARK_DEMAND, _demand );
+                    model.put( MARK_READ_ONLY_HTML_FIELDSETS, htmlFieldsets);
+                    
+                    return getPage( PROPERTY_PAGE_TITLE_DETAILS_DEMAND, TEMPLATE_DETAILS_DEMAND, model );
+                }
+            }
+            catch ( JsonConvertToObjectException e )
+            {
+                return redirectView( request, VIEW_MANAGE_DEMANDS );
             }
         }
         return redirectView( request, VIEW_MANAGE_DEMANDS );
+        
     }
 
 }

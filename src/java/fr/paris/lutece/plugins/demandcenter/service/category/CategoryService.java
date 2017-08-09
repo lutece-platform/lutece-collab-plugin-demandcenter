@@ -39,7 +39,9 @@ import fr.paris.lutece.plugins.demandcenter.business.category.CategoryHome;
 import fr.paris.lutece.plugins.demandcenter.business.category.CategoryType;
 import fr.paris.lutece.plugins.demandcenter.business.category.CategoryTypeHome;
 import fr.paris.lutece.plugins.unittree.business.unit.Unit;
+import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.i18n.I18nService;
+import fr.paris.lutece.portal.service.rbac.RBACService;
 import java.util.List;
 import java.util.Locale;
 
@@ -190,5 +192,22 @@ public class CategoryService
     public List<Category> getBranchOfCategory( Category category )
     {
         return _treeCategories.getBranch( category );
+    }
+    
+    /**
+     * 
+     */
+    public static boolean isAutorized ( Category category, String strPermission,  AdminUser user )
+    {
+        List<Category> listCategory = CategoryService.getInstance( ).getBranchOfCategory(
+                    CategoryService.getInstance( ).findById( category.getId( ) ) );
+            for ( Category categoryBranch : listCategory )
+            {
+                if ( RBACService.isAuthorized( categoryBranch, strPermission, user ) )
+                {
+                    return true;
+                }
+            }
+        return false;
     }
 }

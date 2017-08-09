@@ -31,13 +31,53 @@
  *
  * License 1.0
  */
-package init_db_demandcenter_workflow_sample;
+package fr.paris.lutece.plugins.demandcenter.service.entrytype;
 
-/**
- *
- * @author alexandre
- */
-public class sql
+public enum SimpleEntryType
 {
+    TEXT( "text","/admin/plugins/demandcenter/entry/read_only_entry_type_text.html"), 
+    DATE( "date","/admin/plugins/demandcenter/entry/read_only_entry_type_date.html" ),
+    IMAGE( "image","/admin/plugins/demandcenter/entry/read_only_entry_type_image.html" );
+    
+    private String _strType;
+    private String _strTemplate;
+    
+    SimpleEntryType( String strType, String strTemplate )
+    {
+        _strType = strType;
+        _strTemplate = strTemplate;
+    }
 
+    public String getType()
+    {
+        return _strType;
+    }
+
+    public void setType( String strType )
+    {
+        _strType = strType;
+    }
+
+    public String getTemplate()
+    {
+        return _strTemplate;
+    }
+
+    public void setTemplate( String strTemplate )
+    {
+        _strTemplate = strTemplate;
+    }
+    
+    public static SimpleEntryType findByType( String strType )
+    {
+        for ( SimpleEntryType entryType : SimpleEntryType.values() )
+        {
+            if ( entryType.getType().equals( strType ) )
+            {
+                return entryType;
+            }
+        }
+        return null;        
+    }
+   
 }

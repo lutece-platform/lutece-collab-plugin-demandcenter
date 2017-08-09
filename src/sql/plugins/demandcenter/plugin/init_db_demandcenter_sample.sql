@@ -2,7 +2,10 @@ INSERT INTO demandcenter_attribute (id_attribute, code, label, mandatory, may_be
 (1, 'first_name', 'Prénom', 1, 1 ),
 (2, 'last_name', 'Nom',1,1),
 (3,'email','Email',1,1),
-(4,'gender','Civilité',0,2);
+(4,'gender','Civilité',0,1);
+(5,'fixed_phone','Numéro de téléphone fixe',0,1);
+(6,'mobile_phone','Numéro de téléphone mobile',0,1);
+(7,'address','Adresse',0,1);
 
 
 INSERT INTO demandcenter_channel VALUES 
@@ -27,6 +30,10 @@ INSERT INTO demandcenter_attribute_demand (id, id_demand, id_attribute, value, f
 (1, 7, 1, 'John', 1 ),
 (2, 7, 2, 'Doe',1 ),
 (3,7,3,'john.doe@paris.fr',1);
+(4,7,4,'M.',0,1);
+(5,7,5,'0187313233',0,1);
+(6,7,6,'0631624808',0,1);
+(7,7,7,'23 rue Laurent Voulzy',0,1);
 
 
 INSERT INTO demandcenter_demand VALUES 

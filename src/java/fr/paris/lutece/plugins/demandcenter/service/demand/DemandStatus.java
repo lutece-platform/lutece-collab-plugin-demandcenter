@@ -31,60 +31,29 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.demandcenter.business.demand.filter;
+package fr.paris.lutece.plugins.demandcenter.service.demand;
 
-import fr.paris.lutece.plugins.demandcenter.business.category.Category;
-import fr.paris.lutece.plugins.demandcenter.business.demand.Demand;
-import fr.paris.lutece.plugins.demandcenter.service.category.CategoryService;
-import fr.paris.lutece.portal.business.user.AdminUser;
-import fr.paris.lutece.portal.service.admin.AdminUserService;
-import fr.paris.lutece.portal.service.rbac.RBACService;
-import java.util.ArrayList;
-
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
-public class RBACDemandFilter implements IDemandFilter
+public enum DemandStatus
 {
-    private final AdminUser _user;
+    IN_PROGRESS("in_progress"),
+    CLOSED("closed");
+    
+    private String _strName;
 
-    private static final String RBAC_DEMAND_FILTER = "rbac_demand_filter";
-
-    /**
-     * Constructor of RBAC demand filter
-     * 
-     * @param request
-     *            the HttpServletRequest
-     */
-    public RBACDemandFilter( HttpServletRequest request )
+    private DemandStatus( String strName )
     {
-        _user = AdminUserService.getAdminUser( request );
+        _strName = strName;
+    }
+    
+    public String getName()
+    {
+        return _strName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Demand> processFilter( List<Demand> listDemands )
+    public void setName( String strName )
     {
-        List<Demand> listFilteredDemand = new ArrayList<Demand>( );
-        for ( Demand demand : listDemands )
-        {
-            if ( CategoryService.isAutorized( demand.getCategory(), Category.PERMISSION_VIEW, _user) )
-            {
-                listFilteredDemand.add( demand );
-            }
-        }
-        return listFilteredDemand;
+        _strName = strName;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getFilterName( )
-    {
-        return RBAC_DEMAND_FILTER;
-    }
-
+    
+    
 }

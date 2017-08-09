@@ -38,12 +38,16 @@ import fr.paris.lutece.plugins.demandcenter.business.attributes.AttributeDemandH
 import fr.paris.lutece.plugins.demandcenter.business.category.Category;
 import fr.paris.lutece.plugins.demandcenter.business.channel.Channel;
 import fr.paris.lutece.plugins.demandcenter.business.contactmode.ContactMode;
+import fr.paris.lutece.plugins.demandcenter.business.service.FieldSet;
+import fr.paris.lutece.plugins.demandcenter.service.demand.DemandStatus;
 import fr.paris.lutece.plugins.unittree.business.unit.Unit;
 import fr.paris.lutece.plugins.workflowcore.business.state.State;
 import fr.paris.lutece.portal.business.user.AdminUser;
+import fr.paris.lutece.portal.service.rbac.RBACResource;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +56,24 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * This is the business class for the object Demand
  */
-public class Demand implements Serializable
+public class Demand implements RBACResource, Serializable
 {
     private static final long serialVersionUID = 1L;
     // For resource workflow
     public static final String DEMAND_RESOURCE_TYPE = "demandcenter_demand";
 
+    // RBAC management
+    public static final String RESOURCE_TYPE = "DEMAND";
+    public static final String PROPERTY_LABEL_RESOURCE_TYPE = "demandcenter.demand.ressourceType.label";
+
+    // Perimissions
+    public static final String PERMISSION_MODIFY = "MODIFY_DEMAND";
+    public static final String PROPERTY_LABEL_PERMISSION_MODIFY= "demandcenter.demand.permission.modify.label";
+
+    public static final String PERMISSION_DELETE = "DELETE_DEMAND";
+    public static final String PROPERTY_LABEL_PERMISSION_DELETE = "demandcenter.demand.permission.delete.label";
+    
+    
     // Variables declarations
     private int _nId;
     private String _strReference;
@@ -76,6 +92,8 @@ public class Demand implements Serializable
     private Channel _channel;
     private ContactMode _contactMode;
     private List<AttributeDemand> _listAttributeDemand;
+    private List<FieldSet> _listFieldset;
+    private DemandStatus _status;
 
     private State _state;
     private List<Action> _listActions;
@@ -83,19 +101,16 @@ public class Demand implements Serializable
     public Demand( )
     {
         _strReference = StringUtils.EMPTY;
-
         _category = new Category( );
-
         _assigneeUnit = new Unit( );
         _assigneeUnit.setIdUnit( -1 );
-
         _assigneeUser = new AdminUser( );
         _assigneeUser.setUserId( -1 );
-
         _channel = new Channel( );
         _contactMode = new ContactMode( );
-
         _state = new State( );
+        _listAttributeDemand = new ArrayList();
+        _status = DemandStatus.IN_PROGRESS;
     }
 
     /**
@@ -189,9 +204,13 @@ public class Demand implements Serializable
      */
     public Map<String, AttributeDemand> getMapAttributeDemand( )
     {
-        List<AttributeDemand> listDemandAttributes = AttributeDemandHome.getAttributeDemandsListFromIdDemand( getId( ) );
-        Map<String, AttributeDemand> mapAttributes = new HashMap<>( );
-        listDemandAttributes.stream( ).forEach( ( attributeDemand ) -> mapAttributes.put( attributeDemand.getAttribute( ).getCode( ), attributeDemand ) );
+        if ( _listAttributeDemand.isEmpty() )
+        {
+            _listAttributeDemand = AttributeDemandHome.getAttributeDemandsListFromIdDemand( getId( ) );
+        }
+        Map<String,AttributeDemand> mapAttributes = new HashMap<>();
+        _listAttributeDemand.stream( ).forEach( ( attributeDemand ) -> mapAttributes.put( attributeDemand.getAttribute( ).getCode( ), attributeDemand ) );
+        
         return mapAttributes;
     }
 
@@ -424,6 +443,16 @@ public class Demand implements Serializable
     {
         _strGuid = strGuid;
     }
+    
+    public DemandStatus getStatus()
+    {
+        return _status;
+    }
+
+    public void setStatus( DemandStatus status )
+    {
+        this._status = status;
+    }
 
     /**
      * Get the state attached to the demand
@@ -486,6 +515,28 @@ public class Demand implements Serializable
     public void setListAttributeDemand( List<AttributeDemand> listAttributeDemand )
     {
         _listAttributeDemand = listAttributeDemand;
+    }
+
+    public List<FieldSet> getListFieldset()
+    {
+        return _listFieldset;
+    }
+
+    public void setListFieldset( List<FieldSet> listFieldset )
+    {
+        this._listFieldset = listFieldset;
+    }
+
+    @Override
+    public String getResourceTypeCode()
+    {
+        return DEMAND_RESOURCE_TYPE;
+    }
+
+    @Override
+    public String getResourceId()
+    {
+        return Integer.toString( _nId );
     }
 
 }

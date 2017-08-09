@@ -41,12 +41,10 @@ import fr.paris.lutece.plugins.demandcenter.business.demand.Demand;
 import fr.paris.lutece.plugins.demandcenter.business.web.rs.dto.FormSubmitDto;
 import fr.paris.lutece.plugins.demandcenter.business.web.rs.dto.ResponseDto;
 import fr.paris.lutece.plugins.demandcenter.rs.exception.AbstractRestException;
-import fr.paris.lutece.plugins.demandcenter.rs.exception.JsonConvertToObjectException;
 import fr.paris.lutece.plugins.demandcenter.rs.exception.ObjectConvertToJsonException;
 import fr.paris.lutece.plugins.demandcenter.service.demand.DemandService;
 import fr.paris.lutece.plugins.demandcenter.service.demand.DemandValidator;
 import fr.paris.lutece.portal.service.util.AppLogService;
-import java.io.IOException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -92,7 +90,7 @@ public class DemandRestService
     {
         try
         {
-            FormSubmitDto formSubmit = fetchFormSubmit( strJsonFormSubmit );
+            FormSubmitDto formSubmit = DemandService.fetchFormSubmit( strJsonFormSubmit );
             Demand demand = DemandService.getDemandFromFormSubmit( formSubmit, strJsonFormSubmit );
 
             // Test validity of the demand
@@ -109,27 +107,6 @@ public class DemandRestService
             AppLogService.error( e.getResponse( ).getMessage( ), e );
             return buildResponse( e.getResponse( ), e.getStatus( ) );
         }
-    }
-
-    /**
-     * Convert the json form submit to a java FormSubmitDto obj
-     * 
-     * @param strJsonFormSubmit
-     * @return a FormSubmitDto object
-     * @throws JsonConvertToObjectException
-     */
-    private FormSubmitDto fetchFormSubmit( String strJsonFormSubmit ) throws JsonConvertToObjectException
-    {
-        try
-        {
-            FormSubmitDto formSubmit = _mapper.readValue( strJsonFormSubmit, FormSubmitDto.class );
-            return formSubmit;
-        }
-        catch( IOException e )
-        {
-            throw new JsonConvertToObjectException( e );
-        }
-
     }
 
     /**

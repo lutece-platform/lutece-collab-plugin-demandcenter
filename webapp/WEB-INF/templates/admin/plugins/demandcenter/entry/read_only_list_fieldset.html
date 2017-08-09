@@ -1,0 +1,9 @@
+<#list list_fieldset as fieldset>
+    <hr>
+    <div>
+        <h3>${fieldset.name}</h3>
+        <#list fieldset.listEntry as entry>
+            ${entry_type_service.getReadOnlyHtml(entry,locale)}
+        </#list>
+    </div>
+</#list>

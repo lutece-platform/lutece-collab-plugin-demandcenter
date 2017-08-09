@@ -1,0 +1,8 @@
+<#list list_answers as answer> 
+    <div class="form-group">
+        <label>${question.label}</label>
+        <p>
+                <img title="${answer.label}" alt="${answer.label}" src="${answer.value}" class="img-responsive"/>
+        </p>
+    </div>
+</#list>

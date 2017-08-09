@@ -33,6 +33,9 @@
  */
 package fr.paris.lutece.plugins.demandcenter.service.demand;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.paris.lutece.plugins.demandcenter.business.attributes.AttributeDemand;
 import fr.paris.lutece.plugins.demandcenter.business.attributes.AttributeDemandHome;
 import fr.paris.lutece.plugins.demandcenter.business.category.Category;
@@ -40,18 +43,47 @@ import fr.paris.lutece.plugins.demandcenter.business.channel.Channel;
 import fr.paris.lutece.plugins.demandcenter.business.contactmode.ContactMode;
 import fr.paris.lutece.plugins.demandcenter.business.demand.Demand;
 import fr.paris.lutece.plugins.demandcenter.business.demand.DemandHome;
+import fr.paris.lutece.plugins.demandcenter.business.service.FieldSet;
+import fr.paris.lutece.plugins.demandcenter.business.service.FormSubmitService;
+import fr.paris.lutece.plugins.demandcenter.business.service.IEntryTypeService;
 import fr.paris.lutece.plugins.demandcenter.business.web.rs.dto.FormSubmitDto;
 import fr.paris.lutece.plugins.demandcenter.rs.exception.CategoryNotFoundException;
 import fr.paris.lutece.plugins.demandcenter.rs.exception.ChannelNotFoundException;
 import fr.paris.lutece.plugins.demandcenter.rs.exception.ContactModeNotFoundException;
 import fr.paris.lutece.plugins.demandcenter.rs.exception.IdentityNotFoundException;
+import fr.paris.lutece.plugins.demandcenter.rs.exception.JsonConvertToObjectException;
 import fr.paris.lutece.plugins.demandcenter.rs.exception.MissingAttributesException;
 import fr.paris.lutece.plugins.demandcenter.service.demand.attributes.DemandAttributeService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.workflow.WorkflowService;
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class DemandService
 {
+    private static final ObjectMapper _mapper;
+    private static final IEntryTypeService _entryTypeService;
+    
+    static{
+        _mapper = new ObjectMapper( );
+        _mapper.enable( SerializationFeature.WRAP_ROOT_VALUE );
+        _mapper.enable( DeserializationFeature.UNWRAP_ROOT_VALUE );
+        _entryTypeService = (IEntryTypeService)SpringContextService.getBean( "demandcenter.entryTypeService" );
+    }
+    
+    //Markers
+    private final static String MARK_LIST_FIELDSET = "list_fieldset";
+    private final static String MARK_SERVICE_ENTRY_TYPE = "entry_type_service";
+    private final static String MARK_LOCALE = "locale";
+    
+    //Templates
+    private static final String TEMPLATE_READ_ONLY_LIST_FIELDSET  = "/admin/plugins/demandcenter/entry/read_only_list_fieldset.html";
+    
     public static WorkflowService _workflowService = WorkflowService.getInstance( );
 
     /**
@@ -131,7 +163,64 @@ public class DemandService
 
         // Initialize the workflow resource
         _workflowService.getState( demand.getId( ), Demand.DEMAND_RESOURCE_TYPE, nIdWorkflow, -1 );
+    }
+    
+    public static Demand loadDemandById( int nId ) throws JsonConvertToObjectException
+    {
+        //Load the demand
+        Demand demand = DemandHome.findFullByPrimaryKey( nId );
+        
+        //Load the attribute demand list
+        if ( demand != null )
+        {
+           demand.setListAttributeDemand(
+                AttributeDemandHome.getAttributeDemandsListFromIdDemand( nId )
+            ); 
+           
+           //Map the JSON of content of demand on a form submit obj
+           FormSubmitDto formSubmitDto = fetchFormSubmit( demand.getDemandContent( ) );
+           
+           //Set the fieldsets of the demand
+           demand.setListFieldset( 
+                   FormSubmitService.getListFieldSets( formSubmitDto )
+            );
+           
+        }
+        
+        return demand;   
+    }
+    
+    /**
+     * Convert the json form submit to a java FormSubmitDto obj
+     * 
+     * @param strJsonFormSubmit
+     * @return a FormSubmitDto object
+     * @throws JsonConvertToObjectException
+     */
+    public static FormSubmitDto fetchFormSubmit( String strJsonFormSubmit ) throws JsonConvertToObjectException
+    {
+        try
+        {
+            FormSubmitDto formSubmit = _mapper.readValue( strJsonFormSubmit, FormSubmitDto.class );
+            return formSubmit;
+        }
+        catch( IOException e )
+        {
+            throw new JsonConvertToObjectException( e );
+        }
 
+    }
+    
+    public static String getReadOnlyFieldsetsAsHtml( Demand demand, Locale locale )
+    {
+        List<FieldSet> listFieldset = demand.getListFieldset();
+        Map<String, Object> model = new HashMap();
+        model.put( MARK_LIST_FIELDSET, listFieldset);
+        model.put( MARK_LOCALE, locale);
+        model.put( MARK_SERVICE_ENTRY_TYPE, _entryTypeService );
+        
+        return AppTemplateService.getTemplate( TEMPLATE_READ_ONLY_LIST_FIELDSET, locale, model ).getHtml();
+        
     }
 
 }

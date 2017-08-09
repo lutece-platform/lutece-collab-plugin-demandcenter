@@ -1,0 +1,74 @@
+<script>$(".content-header").hide();</script>
+<#include "/admin/plugins/demandcenter/include/commons.html" />
+<#--<#include "/admin/plugins/demandcenter/include/popins.html" />-->
+<#include "view_demand_header.html" />
+<@demandHeader tab='details' demand=demand navigation_next='' navigation_previous=''/>
+<div id="demand-panel" class="row demand-content">
+  <@notification infos=infos />
+  <@messages errors=errors />
+  <div id="demand-content" class="col-xs-12 col-sm-offset-1 col-sm-7">
+    <h3 class="text-darkgray">${demand.dateCreate!''}</h3>
+    <#if demand.comment !=''>
+      <div class="text-justify">
+        <p class="wordwrap-demand-comment">${demand.comment}</p>
+      </div>
+    <#else>
+      <p class="lead">
+        <i class="fa fa-warning"></i> #i18n{demandcenter.view_demand_details.labelNoComment}
+      </p>
+    </#if>
+    <#if read_only_html_fieldsets?has_content>
+      ${read_only_html_fieldsets!''}
+    </#if>
+    ${history!''}
+  </div>
+  <div id="info-right" class="col-xs-12 col-sm-3">
+    <@categoryFormatedDetails demand.category/>
+    <#--<#if demand.nomenclature??>
+      <h5>#i18n{demandcenter.view_demand_details.labelNomenclature}</h5>
+      <h4>${demand.nomenclature}</h4>
+    </#if>-->
+    <#if demand.channel??>
+      <h5>#i18n{demandcenter.view_demand_details.labelChannel}</h5>
+      <h4><#if demand.channel.iconFont??><i class="${demand.channel.iconFont}"></i>&nbsp;</#if>${demand.channel.label!''}</h4>
+    </#if>
+    <hr>
+    <#if demand.listActions?? && demand.listActions?size &gt; 0>
+      <#list demand.listActions as action>
+        <p>
+          <#if action.displayTasksForm>
+            <a class="btn btn-lg btn-primary btn-block bg-gru-dark"  href="jsp/admin/plugins/demandcenter/Standalone.jsp?view=viewWorkflowActionForm&id_action=${action.id}&amp;id=${demand.id}&amp;jsp=${jsp_controller}"
+              data-remote="false" data-toggle="modal" data-title="${action.description}" data-target="#demandcenter-modal-workflow-action-form" title="${action.name}" data-action-id="${action.id}">
+              <i class="fa fa-${action.name!'plus'}"></i>  ${action.name}
+            </a>
+          <#else>
+            <a class="btn btn-lg btn-primary btn-block bg-gru-dark" data-title="${action.name}" href="jsp/admin/plugins/demandcenter/TicketView.jsp?view=viewWorkflowActionForm&id_action=${action.id}&amp;id=${demand.id}"
+                title="${action.name}" data-action-id="${action.id}">
+                <i class="fa fa-${action.name!'plus'}"></i>  ${action.name}
+            </a>
+          </#if>
+          </p>
+        </#list>
+      </#if>
+      <#if demand_modification_right?? && demand_modification_right>
+       <p>
+         <a class="btn btn-lg btn-primary btn-block bg-gru-dark"  href="jsp/admin/plugins/demandcenter/ManageTickets.jsp?view=modifyTicket&id=${demand.id}" title="#i18n{portal.util.labelModify}">
+           <i class="fa fa-pencil"></i>  #i18n{portal.util.labelModify}
+         </a>
+       </p>
+     </#if>
+     <#if demand_deletion_right?? && demand_deletion_right>
+         <p>
+           <a class="btn btn-lg btn-primary btn-block bg-gru-dark"  href="jsp/admin/plugins/demandcenter/ManageTickets.jsp?action=confirmRemoveTicket&id=${demand.id}" title="#i18n{portal.util.labelDelete}">
+             <i class="fa fa-trash"></i>  #i18n{portal.util.labelDelete}
+           </a>
+         </p>
+     </#if>
+  </div>
+</div>
+</div>
+<script>
+  $( function(){
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+</script>

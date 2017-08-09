@@ -11,6 +11,79 @@
     </#if>
 </#macro>
 
+<#macro userAttributesFormatedDemandDetails mapAttribute>
+    <#if mapAttribute?size gt 0>
+        <h2>
+            <#if mapAttribute['first_name']?? && mapAttribute['last_name']??>
+                <#if mapAttribute['gender']??>
+                    ${mapAttribute['gender'].value}
+                </#if>
+                 ${mapAttribute['first_name'].value} ${mapAttribute['last_name'].value}</strong></li>
+            </#if>
+        </h2>
+        <div class="visible-xs">
+                 <#if mapAttribute['email']?? && mapAttribute['email'].value?has_content >
+                 <p><i class="fa fa-at"></i>${mapAttribute['email'].value}</p>
+                         </#if>
+                 <#if mapAttribute['fixed_phone']?? && mapAttribute['fixed_phone'].value?has_content>
+                 <p>
+                    <i class="fa fa-phone" ></i>
+                    <#if mapAttribute['fixed_phone'].value?length == 10>
+                    ${mapAttribute['fixed_phone'].value[0..1]} ${mapAttribute['fixed_phone'].value[2..3]} ${mapAttribute['fixed_phone'].value[4..5]} ${mapAttribute['fixed_phone'].value[6..7]} ${mapAttribute['fixed_phone'].value[8..9]}
+                    <#else>
+                    ${mapAttribute['fixed_phone'].value!''}
+                    </#if>
+                 </p>
+                 </#if>
+                 <#if mapAttribute['mobile_phone']?? && mapAttribute['mobile_phone'].value?has_content>
+                 <p>
+                    <i class="fa fa-phone" ></i>
+                    <#if mapAttribute['mobile_phone'].value?length == 10>
+                    ${mapAttribute['mobile_phone'].value[0..1]} ${mapAttribute['mobile_phone'].value[2..3]} ${mapAttribute['mobile_phone'].value[4..5]} ${mapAttribute['mobile_phone'].value[6..7]} ${mapAttribute['mobile_phone'].value[8..9]}
+                    <#else>
+                    ${mapAttribute['mobile_phone'].value!''}
+                    </#if>
+                 </p>
+                 </#if>
+              </div>
+    </#if>
+</#macro>
+
+<#macro demandAddressFormated mapAttributes>
+        <div class=" hidden-xs col-sm-5">
+            <h4>
+               <i class="fa fa-envelope" style="margin-left:-21px"></i>
+               <#if mapAttributes['address']?? && mapAttributes['address'].value?has_content>
+               ${mapAttributes['address'].value!''}
+               </#if>
+            </h4>
+            <h4>
+               <#if mapAttributes['address_detail']?? && mapAttributes['address_detail'].value?has_content>
+               ${mapAttributes['address_detail'].value!''}
+               </#if>
+            </h4>
+            <h4>
+               <#if mapAttributes['address_postal_code ']?? && mapAttributes['address_postal_code '].value?has_content>
+               ${mapAttributes['address_postal_code'].value!''}
+               </#if>
+               <#if mapAttributes['address_city  ']?? && mapAttributes['address_city  '].value?has_content>
+               ${mapAttributes['address_city  '].value!''}
+               </#if>
+            </h4>
+        </div>
+</#macro>
+
+
+<#macro categoryFormatedDetails categoryLeaf >
+    <#if categoryLeaf.branch?size gt 0>
+        <#list categoryLeaf.branch as category>       
+            <h5>${category.categoryType.label}</h5> 
+            <h4>${category.label}</h4>
+            <hr>
+        </#list>
+    </#if>
+</#macro>
+
 <#macro categoryFormated categoryLeaf >
     <#if categoryLeaf.branch?size gt 0>
         <ul class="list-unstyled text-left">
@@ -174,26 +247,26 @@
     <#assign hours = (time_ms / 3600000)?int>
     <#assign minutes = (time_ms / 60000)?int>
 
-    <#switch status>
-      <#case 0>
+    <#switch status.getName()>
+      <#case "in_progress">
         <#if days gte 1>
-            <#return "<strong class=\"lead\">" + days + "</strong><br class=\"hidden-xs\"> #i18n{ticketing.commons.unitDay}">
+            <#return "<strong class=\"lead\">" + days + "</strong><br class=\"hidden-xs\"> #i18n{demandcenter.commons.unitDay}">
         <#else>
             <#if hours gte 1>
-            <#return "<strong class=\"lead\">" + hours + "</strong><br class=\"hidden-xs\"> #i18n{ticketing.commons.unitHour}">
+            <#return "<strong class=\"lead\">" + hours + "</strong><br class=\"hidden-xs\"> #i18n{demandcenter.commons.unitHour}">
             <#else>
-            <#return "<strong class=\"lead\">" + minutes + "</strong><br class=\"hidden-xs\"> #i18n{ticketing.commons.unitMinute}">
+            <#return "<strong class=\"lead\">" + minutes + "</strong><br class=\"hidden-xs\"> #i18n{demandcenter.commons.unitMinute}">
             </#if>
         </#if>
         <#break>
-    <#case 1>
+    <#case "closed">
         <#return "<i class=\"fa fa-check fa-2x\" style=\"margin-top:20px\"></i>">
         <#break>
     </#switch>
 </#function>
 
 <#function getContactModeLabel contactModeCode >
-  <#assign label = i18n("ticketing.contactmodes.label." + contactModeCode)>
+  <#assign label = i18n("demandcenter.contactmodes.label." + contactModeCode)>
   <#if label?? && label?has_content>
     <#return label>
   <#else>
@@ -203,7 +276,7 @@
          
 
 <#macro fieldStaticTextTicketDetails i18nLabelKey >
-    <div class="ticketing-form-group">
+    <div class="demandcenter-form-group">
         <p>#i18n{${i18nLabelKey}}</p>
         <label>
             <#nested>

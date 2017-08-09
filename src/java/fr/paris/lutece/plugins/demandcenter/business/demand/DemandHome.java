@@ -106,6 +106,18 @@ public final class DemandHome
     {
         return _dao.load( nKey, _plugin );
     }
+    
+    /**
+     * Returns an instance of a full demand whose identifier is specified in parameter
+     * 
+     * @param nKey
+     *            The demand primary key
+     * @return a full instance of Demand
+     */
+    public static Demand findFullByPrimaryKey( int nKey )
+    {
+        return _dao.loadFull( nKey, _plugin );
+    }
 
     /**
      * Load the data of all the demand objects and returns them as a list

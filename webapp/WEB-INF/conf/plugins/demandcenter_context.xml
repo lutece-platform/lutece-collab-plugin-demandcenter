@@ -14,4 +14,8 @@
 
     <!-- DemandRestService-->
     <bean id="demandcenter.demandRestService" class="fr.paris.lutece.plugins.demandcenter.rs.DemandRestService" />
+
+    <!-- Services -->
+    <bean id="demandcenter.entryTypeService" class="fr.paris.lutece.plugins.demandcenter.service.entrytype.SimpleEntryTypeService" />
+
 </beans>

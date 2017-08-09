@@ -1,0 +1,126 @@
+<#--<#include "/admin/plugins/demandcenter/include/user_info.html"/>-->
+<#macro demandHeader tab demand navigation_next=-1 navigation_previous=-1>
+<div class="gru-wrapper">
+<div id="customer-panel" class="row demand-head bg-gru-light">
+<div class="col-sm-offset-1 col-sm-7">
+<div class="row demand-contact-block">
+   <div class="col-xs-8 col-sm-4">
+      <@userAttributesFormatedDemandDetails demand.mapAttributeDemand/>
+   </div>
+   <div class="hidden-xs col-sm-8 demand-contact-block">
+       
+      <#--<div class=" hidden-xs no-padding wordwrap-demand-comment <#if demand.demandAddress?has_content> col-sm-7 <#else> col-sm-12 </#if>">
+      
+	  <#if demand.email?has_content && demand.email!="">
+      <h4><i class="fa fa-at"></i> ${demand.email}</h4>
+      </#if>
+      <#if demand.fixedPhoneNumber?has_content>
+      <h4>
+         <i class="fa fa-phone" ></i>
+         <#if demand.fixedPhoneNumber?length == 10>
+         ${demand.fixedPhoneNumber[0..1]} ${demand.fixedPhoneNumber[2..3]} ${demand.fixedPhoneNumber[4..5]} ${demand.fixedPhoneNumber[6..7]} ${demand.fixedPhoneNumber[8..9]}
+         <#else>
+         ${demand.fixedPhoneNumber!}
+         </#if>
+      </h4>
+      </#if>
+      <#if demand.mobilePhoneNumber?has_content>
+      <h4>
+         <i class="fa fa-mobile" ></i>
+         <#if demand.mobilePhoneNumber?length == 10>
+         ${demand.mobilePhoneNumber[0..1]} ${demand.mobilePhoneNumber[2..3]} ${demand.mobilePhoneNumber[4..5]} ${demand.mobilePhoneNumber[6..7]} ${demand.mobilePhoneNumber[8..9]}
+         <#else>
+         ${demand.mobilePhoneNumber!}
+         </#if>
+      </h4>
+      </#if>
+	</div>
+        -->
+        <@demandAddressFormated demand.mapAttributeDemand/>
+	
+    </div>
+</div>
+    
+    
+<div class="row">
+	<div class="col-sm-4">
+      <h2>
+         <a class="btn btn-border" href="jsp/admin/plugins/demandcenter/ManageDemands.jsp?plugin_name=demandcenter" >
+         <i class="fa fa-arrow-left"></i> #i18n{demandcenter.view_demand_header.labelReturn}
+         </a>
+         <#--<#if url_poc_gru?? && url_poc_gru?has_content>
+         <a class="btn btn-border" href="${url_poc_gru!}" >
+         <i class="fa fa-compass"></i> #i18n{demandcenter.gru.button.360View}
+         </a>
+         </#if>-->
+      </h2>
+	</div>
+	<div class="col-sm-7">
+ <!-- NAVIGATION -->
+      <#--<#if next_demand ?? || previous_demand ?? >
+      <nav id="item-navigator">
+         <ul class="pager">
+            <#if previous_demand ??   >
+            <li class="previous">
+               <a href="jsp/admin/plugins/demandcenter/TicketView.jsp?id=${previous_demand}" title="#i18n{demandcenter.navigation.demand.view.details.previous.title}">
+               <i class="fa fa-arrow-left"></i> #i18n{demandcenter.navigation.demand.view.details.previous}
+               </a>
+            </li>
+            </#if>
+            <#if next_demand ??  >
+            <li class="next">
+               <a href="jsp/admin/plugins/demandcenter/TicketView.jsp?id=${next_demand}" title="#i18n{demandcenter.navigation.demand.view.details.next.title}">
+               #i18n{demandcenter.navigation.demand.view.details.next} <i class="fa fa-arrow-right"></i>
+               </a>
+            </li>
+            </#if>
+         </ul>
+      </nav>
+      </#if>    -->
+      <!-- END NAVIGATION -->
+	  </div>
+   </div>
+</div>
+   <div class="col-xs-4 col-sm-3" id="info-head-right">
+      <#--<#assign textColor="green"/>
+      <#if demand.urgency==1 >
+      <#assign textColor="orange"/>
+      <#elseif demand.urgency==2 >
+      <#assign textColor="red"/>
+      </#if>-->
+      <p data-toggle="tooltip" data-placement="bottom" <#--title="Priorit&eacute; : ${priority!''} / Criticit&eacute; : ${criticality!''}">-->
+         <#--<i class="fa fa-circle text-${textColor} fa-fw"></i>--> ${demand.reference!}
+      </p>
+      <p>
+         <#if demand.state?? >
+           <#--<#switch demand.demandStatus>
+             <#case 0>
+               <i class="fa fa-hourglass-half fa-fw"></i>
+               <#break>
+             <#case 1>
+               <i class="fa fa-check fa-fw"></i>
+               <#break>
+           </#switch>-->
+           ${demand.state.name}
+         </#if>
+      </p>
+      <#if demand.assigneeUnit??>
+        <p>
+          <i class="fa fa-sitemap fa-fw"></i> ${demand.assigneeUnit.label}
+        </p>
+      </#if>
+      <#--<#if demand.assigneeUser??>
+      	<#assign user=user_factory.create(demand.assigneeUser.adminUserId)!>
+          <#if user?has_content>
+          <p class="info_user" data-key-id="${user.idUser}" data-container="body" data-toggle="popover" data-placement="left">
+            <#if avatar_available>
+            <img class="direct-chat-img" src="servlet/plugins/adminavatar/avatar?id_user=${demand.assigneeUser.adminUserId}">
+            </#if>
+            <span class="avatar-label">${demand.assigneeUser.firstname} ${demand.assigneeUser.lastname}</span>
+            <@info_user user/>
+          </p>
+         </#if>
+      </#if>-->
+   </div>
+</div>
+</#macro>

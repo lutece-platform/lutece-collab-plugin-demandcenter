@@ -36,10 +36,11 @@ package fr.paris.lutece.plugins.demandcenter.service.demand.attributes;
 import fr.paris.lutece.plugins.demandcenter.business.attributes.Attribute;
 import fr.paris.lutece.plugins.demandcenter.business.attributes.AttributeDemand;
 import fr.paris.lutece.plugins.demandcenter.business.attributes.AttributeHome;
+import fr.paris.lutece.plugins.demandcenter.business.service.FormSubmitService;
 import fr.paris.lutece.plugins.demandcenter.business.web.rs.dto.AnswersDto;
+import fr.paris.lutece.plugins.demandcenter.business.web.rs.dto.EntryDto;
 import fr.paris.lutece.plugins.demandcenter.business.web.rs.dto.FormSubmitDto;
 import fr.paris.lutece.plugins.demandcenter.business.web.rs.dto.QuestionDto;
-import fr.paris.lutece.plugins.demandcenter.business.web.rs.service.EntriesDtoService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,21 +59,21 @@ public class DemandAttributeService
      */
     public static List<AttributeDemand> getAttributesDemandFromFormSubmit( FormSubmitDto formSubmit )
     {
-        List<AttributeDemand> listAttributeDemand = new ArrayList<AttributeDemand>( );
+        List<AttributeDemand> listAttributeDemand = new ArrayList<>( );
 
         // Recursively find all questions/answers of the form submit
-        Map<QuestionDto, AnswersDto> mapQuestionAnswers = EntriesDtoService.getRecursiveMapQuestionAnswers( formSubmit.getEntries( ) );
+        List<EntryDto> listAllEntry = FormSubmitService.getEntries( formSubmit );
 
         // Find all attributes codes defined in BO as user attributes
         List<Attribute> listAttribute = AttributeHome.getAttributesList( );
 
-        for ( Map.Entry<QuestionDto, AnswersDto> entry : mapQuestionAnswers.entrySet( ) )
+        for ( EntryDto entry : listAllEntry )
         {
-            QuestionDto question = entry.getKey( );
-            AnswersDto answers = entry.getValue( );
+            QuestionDto question = entry.getQuestion();
+            AnswersDto answers = entry.getAnswers();
             for ( Attribute attribute : listAttribute )
             {
-                if ( attribute.getCode( ).equals( question.getIdentityAttrCode( ) ) )
+                if ( attribute.getCode( ).equals( question.getCode( ) ) )
                 {
                     AttributeDemand attributeDemand = new AttributeDemand( );
                     attributeDemand.setAttribute( attribute );
