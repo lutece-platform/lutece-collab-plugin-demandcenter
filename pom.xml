@@ -26,7 +26,7 @@
         <dependency>
             <groupId>fr.paris.lutece</groupId>
             <artifactId>lutece-core</artifactId>
-            <version>[6.0.0-RC-04,)</version>
+            <version>[6.0.0-RC-04,7.9.9)</version>
             <type>lutece-core</type>
             <exclusions>
                 <exclusion>
@@ -56,13 +56,13 @@
         <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>plugin-workflow</artifactId>
-            <version>[4.2.3,)</version>
+            <version>[4.2.3,6.9.9)</version>
             <type>lutece-plugin</type>
         </dependency>
         <dependency>
             <groupId>fr.paris.lutece.plugins</groupId>
             <artifactId>module-workflow-notifygru</artifactId>
-            <version>[1.3.4-SNAPSHOT,)</version>
+            <version>[1.3.4-SNAPSHOT,2.9.9)</version>
             <type>lutece-plugin</type>
         </dependency>
     </dependencies>
@@ -70,7 +70,7 @@
     <properties>
         <componentName>demandcenter</componentName>
         <jiraProjectName>DEMANDCENTER</jiraProjectName>
-        <jiraComponentId></jiraComponentId>
+        <jiraComponentId />
     </properties>
 
     <scm>
